@@ -2,10 +2,13 @@ import React, { Component } from 'react'
 import * as BooksAPI from './BooksAPI'
 
 /**
- * Search input component to get search term and fetch results
+ * @description Search input component to get search term and fetch results
  */
 class SearchInput extends Component {
-  /* Fetch search results and pass it to parent component */
+  /**
+   * @description  Fetch search results and pass it to parent component 
+   * @param {Object} e Event object with value of search term
+   * */
   onSearch = (e) => {
     const searchTerm = e.target.value;
     //call API for search term length greater than 3 
@@ -16,6 +19,9 @@ class SearchInput extends Component {
         ))
     }
   }
+  /**
+   * @description Renders the input box for capturing search terms
+   */
   render() {
     return (
       <div className="search-books-input-wrapper">

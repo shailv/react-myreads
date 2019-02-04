@@ -6,7 +6,9 @@ import './App.css'
 import Book from './Book'
 import SearchBooks from './SearchBooks'
 
-//Bookshelf array with shelf name and ID for displaying shelves
+/** 
+* @description Bookshelf array with shelf name and ID for displaying shelves
+*/
 const bookShelves = [
   {
     "shelfID": "currentlyReading",
@@ -19,12 +21,22 @@ const bookShelves = [
   {
     "shelfID": "read",
     "shelfName": "Read"
+  },
+  {
+    "shelfID": "none",
+    "shelfName": "None"
   }
 ]
-/**
- * Displays user's books on shelves with links to search page
- */
+
+/** 
+* @description Displays user's books on shelves with links to search page
+*/
 class BooksApp extends React.Component {
+  /**
+   * @description Create state object to store all books saved by user
+   * @constructor Initializes state and binds OnShelfChange event
+   * @param {Object} props 
+   */  
   constructor(props) {
     super(props);
     this.state = {
@@ -33,9 +45,11 @@ class BooksApp extends React.Component {
     this.onShelfChange = this.onShelfChange.bind(this);
   }
 
-  /*
-   //Shelf update event - update the book shelf name using BooksAPI
- */
+  /** 
+  * @description Handles shelf update event to update the book shelf name using BooksAPI
+  * @param {Object} bookToUpdate Book object that needs to be updated
+  * @param {string} newShelfName Shelf name that was selected by user
+  */
   onShelfChange(bookToUpdate, newShelfName) {
     //update the book shelf name in BooksAPI
     BooksAPI.update(bookToUpdate, newShelfName);
@@ -47,26 +61,27 @@ class BooksApp extends React.Component {
     this.setState(() => ({ booksList: newBookList }));
   }
 
-  /*
-  Get all books when component is mounted
+  /** 
+  * @description Get all books when component is mounted
   */
   componentDidMount() {
     BooksAPI.getAll().then((data) => this.setState(() => ({ booksList: data })));
   }
 
+  /** 
+  * @description Handle routing for search and home. Render SearchBooks component and display books in user's shelves
+  */
   render() {
     return (
       <div className="app">
-        //SearchBooks component lifts shelf change event and redirects back to homepage
         <Route path='/search' render={({ history }) => (
-          <SearchBooks
+          <SearchBooks shelves={bookShelves}
             onShelfChange={(bookToUpdate, newShelfName) => {
               this.onShelfChange(bookToUpdate, newShelfName);
               history.push('/');
             }} />
         )} />
 
-        //Display shelves on homepage
         <Route exact path='/' render={() => (
           <div className="list-books">
             <div className="list-books-title">
@@ -74,14 +89,14 @@ class BooksApp extends React.Component {
             </div>
             <div className="list-books-content">
               <div>
-                {bookShelves.map((shelf) => (
+                {bookShelves.filter(shelf => shelf.shelfID !== 'none').map((shelf) => (
                   <div className="bookshelf" key={shelf.shelfID}>
                     <h2 className="bookshelf-title">{shelf.shelfName}</h2>
                     <div className="bookshelf-books">
                       <ol className="books-grid">
                         {Object.values(this.state.booksList).filter(book => book.shelf === shelf.shelfID).map(bookObject =>
                           <li key={bookObject.id}>
-                            <Book bookObject={bookObject} onShelfChange={this.onShelfChange} />
+                            <Book bookObject={bookObject} onShelfChange={this.onShelfChange} shelves={bookShelves} />
                           </li>
                         )}
                       </ol>
@@ -90,7 +105,6 @@ class BooksApp extends React.Component {
                 ))}
               </div>
             </div>
-            //Link to search page
             <div className="open-search">
               <Link to='/search'>Search a book</Link>
             </div>
