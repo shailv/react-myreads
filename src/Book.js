@@ -25,7 +25,7 @@ class Book extends Component {
     onShelfChange = (event) => {
         const updatedBook = Object.assign({}, this.state.book)
         updatedBook.shelf = event.target.value;
-        this.setState(() => ({ book: updatedBook }));
+        this.setState(() => ({ book: updatedBook, shelf: updatedBook.shelf}));
 
         this.props.onShelfChange(updatedBook, event.target.value);
     }

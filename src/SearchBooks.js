@@ -15,6 +15,7 @@ class SearchBooks extends Component {
       usersShelf: {}
     };
     this.onSearch = this.onSearch.bind(this);
+    this.onShelfChange = this.onShelfChange.bind(this);
   }
   /** 
   * @description Get all books on user's shelves
@@ -22,6 +23,7 @@ class SearchBooks extends Component {
   componentDidMount() {
     BooksAPI.getAll().then((data) => this.setState(() => ({ usersShelf: data })));
   }
+
   /** 
   * @description Save search results in state and update books with user's shelf values
   * @param {Object} results Search results Book collection
@@ -34,6 +36,28 @@ class SearchBooks extends Component {
       })
       this.setState(() => ({ searchResults: results }));
     }
+    else {
+      this.setState(() => ({ searchResults: {} }));
+    }
+  }
+
+  /** 
+  * @description Update book's shelf and refresh state to reflect the book's new shelf
+  * @param {Object} bookToUpdate Book object that needs to be updated
+  * @param {string} newShelfName Shelf name that was selected by user
+  */
+  onShelfChange(bookToUpdate, newShelfName) {
+    //update the book shelf name in BooksAPI
+    BooksAPI.update(bookToUpdate, newShelfName);
+
+    //refresh booksList with the updated book and update the state
+    this.setState((currentState) => {
+      const updatedSearchResults = [...currentState.searchResults];
+      const bookPosition = updatedSearchResults.findIndex(b => b.id === bookToUpdate.id)
+
+      updatedSearchResults[bookPosition] = bookToUpdate;
+      return { searchResults: updatedSearchResults }
+    });
   }
   /** 
   * @description Render SearchInput component and display books in search result
@@ -46,18 +70,17 @@ class SearchBooks extends Component {
             Close
           </Link>
           <SearchInput
-            onSearch={this.onSearch
-            }
+            onSearch={this.onSearch}
           />
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
             {Array.isArray(this.state.searchResults) &&
-              Object.values(this.state.searchResults).map(result => (
+              this.state.searchResults.map(result => (
                 <li key={result.id}>
                   <Book shelves={this.props.shelves}
                     bookObject={result}
-                    onShelfChange={this.props.onShelfChange}
+                    onShelfChange={this.onShelfChange}
                   />
                 </li>
               ))}

@@ -78,7 +78,7 @@ class BooksApp extends React.Component {
           <SearchBooks shelves={bookShelves}
             onShelfChange={(bookToUpdate, newShelfName) => {
               this.onShelfChange(bookToUpdate, newShelfName);
-              history.push('/');
+              //history.push('/');
             }} />
         )} />
 

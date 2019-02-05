@@ -14,9 +14,12 @@ class SearchInput extends Component {
     //call API for search term length greater than 3 
     if (searchTerm.length > 3) {
       BooksAPI.search(searchTerm)
-        .then((results) => (
-          this.props.onSearch(results)
-        ))
+        .then((results) => {
+         this.props.onSearch(Array.isArray(results) ? results : {})
+      })
+    }
+    else{
+      this.props.onSearch({})
     }
   }
   /**
@@ -25,7 +28,7 @@ class SearchInput extends Component {
   render() {
     return (
       <div className="search-books-input-wrapper">
-        <input type="text" name="searchTerm" placeholder="Search by title or author" onChange={this.onSearch} />
+        <input type="text" name="searchTerm" placeholder="Search by title or author. Type more than 3 characters" onChange={this.onSearch} />
       </div>
     )
   }
